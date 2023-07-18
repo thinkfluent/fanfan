@@ -1,0 +1,38 @@
+{
+  "name": "fanfan",
+  "version": "0.1.0",
+  "description": "FanFan - a Serverless Fan-out, Fan-in Framework for Google Cloud Pub/Sub",
+  "keywords": [
+    "google",
+    "cloud",
+    "cloud-run",
+    "pubsub",
+    "fanout",
+    "fan-out"
+  ],
+  "license": "MIT",
+  "main": "fanfan.js",
+  "author": "Tom Walder <tom@thinkfluent.co.uk>",
+  "homepage": "https://github.com/thinkfluent/fanfan",
+  "repository": "github:thinkfluent/fanfan",
+  "scripts": {
+    "start": "node fanfan.js",
+    "dev": "nodemon fanfan.js localhost 8080"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "dependencies": {
+    "@google-cloud/pubsub": "^3.4.1",
+    "@redis/client": "^1.5.7",
+    "express": "^4.17.1",
+    "uuid": "^9.0.0",
+    "pino": "^8.11.0",
+    "pino-http": "^8.3.3",
+    "rc": "^1.2.8"
+  },
+  "devDependencies": {
+    "pino-pretty": "^10.0.0",
+    "nodemon": "^2.0.22"
+  }
+}

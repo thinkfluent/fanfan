@@ -1,0 +1,54 @@
+{
+  "hosts": {
+    "fanfan": "http://fanfan:8080",
+    "app": "http://myapp:8080"
+  },
+  "topics": {
+    "fanfan-job-request": {
+      "subscriptions": {
+        "fanfan-job-request-push": {
+          "type": "push",
+          "host": "fanfan",
+          "target": "/job/fan-out"
+        }
+      }
+    },
+    "fanfan-task": {
+      "subscriptions": {
+        "fanfan-task-push": {
+          "type": "push",
+          "host": "app",
+          "target": "/task/run",
+          "dead-letter-topic": "fanfan-task-dead-letter"
+        }
+      }
+    },
+    "fanfan-task-done": {
+      "subscriptions": {
+        "fanfan-task-done-push": {
+          "type": "push",
+          "host": "fanfan",
+          "target": "/task/done"
+        }
+      }
+    },
+    "fanfan-task-dead-letter": {
+      "subscriptions": {
+        "fanfan-task-dead-push": {
+          "type": "push",
+          "host": "fanfan",
+          "target": "/task/dead"
+        }
+      }
+    },
+    "fanfan-job-done": {
+      "subscriptions": {
+        "fanfan-job-done-push": {
+          "type": "push",
+          "host": "app",
+          "target": "/job/done"
+        }
+      }
+    }
+  }
+}

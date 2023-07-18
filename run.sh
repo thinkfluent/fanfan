@@ -1,0 +1,27 @@
+#!/bin/bash
+
+if [[ -v REDIS_HOST ]]; then
+  echo "Redis host set. Waiting."
+  /usr/bin/wait-for "${REDIS_HOST}:${REDIS_PORT:-6379}" -- echo "Redis ready"
+fi
+
+if [[ -v PUBSUB_EMULATOR_HOST ]]; then
+  echo "PubSub emulator host set. Waiting."
+  /usr/bin/wait-for "${PUBSUB_EMULATOR_HOST}" -- echo "PubSub emulator ready"
+  echo "Setting up topics, subscriptions"
+  /usr/local/bin/node /app/scripts/setup_topics.js
+fi
+
+echo "Starting FanFan"
+# if APP_MODE == development, use nodemon or Node.js inspect
+if [[ "${APP_MODE}" = "development"  ]]; then
+  if [[ -v NODE_INSPECT ]]; then
+    echo "  with inspect"
+    exec /usr/local/bin/node --inspect=0.0.0.0 /app/fanfan.js
+  else
+    echo "  via nodemon"
+    exec /usr/local/bin/node /app/node_modules/nodemon/bin/nodemon.js /app/fanfan.js
+  fi
+else
+  exec /usr/local/bin/node /app/fanfan.js
+fi
