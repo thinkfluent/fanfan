@@ -1,6 +1,10 @@
 # FanFan - a Serverless Fan-out, Fan-in Framework for Google Cloud Pub/Sub
 
+## Overview
+
 FanFan behaves like a "plugin" for Pub/Sub - adding task Fan-out, Fan-in behaviours.
+
+<img src="https://github.com/thinkfluent/fanfan/assets/1258131/f87f3788-e06b-4791-b072-6f78808cb5d0" width="400">
 
 1. You emit a single `JobRequest` message (range, foreach or fixed fan-out spec)
 2. FanFan generates _n_ `Task` messages, emits them to Pub/Pub & tracks their status
