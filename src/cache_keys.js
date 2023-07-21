@@ -10,5 +10,6 @@ module.exports.coreKeys = (jobId) => {
         `fanfan-${jobId}-start`,
         `fanfan-${jobId}-tasks`,
         `fanfan-${jobId}-request`,
+        `fanfan-${jobId}-done`,
     ];
 }
