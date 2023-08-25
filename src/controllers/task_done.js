@@ -59,7 +59,8 @@ module.exports = (req, res) => {
                                 logger.info(jobSummary, 'Job (all tasks) complete');
 
                                 // Publish Job Done
-                                pubsub.getTopic(appConfig.pubsub_topic_job_done).publishMessage({
+                                const jobDoneTopic = jobRequestJson.doneTopic || appConfig.pubsub_topic_job_done;
+                                pubsub.getTopic(jobDoneTopic).publishMessage({
                                     data: Buffer.from(JSON.stringify(jobSummary))
                                 }).then((messageId) => {
                                     res.json({jobId, ok: jobSuccessful});
