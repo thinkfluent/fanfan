@@ -8,6 +8,7 @@ const validator = require('../validate.js');
 
 module.exports = (req, res) => {
     const [attribs, taskOutcome] = pubsub.extractPubSub(req.body.message);
+    // @todo performance - do we want this call when we are probably not logging?
     logger.debug({taskOutcome}, 'PS:taskOutcome');
 
     try {
@@ -45,9 +46,10 @@ module.exports = (req, res) => {
                                 // Prep stats payload
                                 const [taskOkCount, taskFailCount, jobStartTime, jobRequestJson] = mGetResult;
                                 const jobSuccessful = (!thisTaskFailed && !taskFailCount);
+                                const jobRequest = JSON.parse(jobRequestJson);
                                 const jobSummary = {
                                     'jobId': jobId,
-                                    'request': JSON.parse(jobRequestJson),
+                                    'request': jobRequest,
                                     'status': jobSuccessful ? itemStatus.job.SUCCEEDED : itemStatus.job.FAILED,
                                     'taskCounts': {
                                         [itemStatus.task.SUCCEEDED]: parseInt(taskOkCount || 0),
@@ -59,8 +61,8 @@ module.exports = (req, res) => {
                                 logger.info(jobSummary, 'Job (all tasks) complete');
 
                                 // Publish Job Done
-                                const jobDoneTopic = jobRequestJson.doneTopic || appConfig.pubsub_topic_job_done;
-                                pubsub.getTopic(jobDoneTopic).publishMessage({
+                                const jobDoneTopicName = jobRequest.doneTopic || appConfig.pubsub_topic_job_done;
+                                pubsub.getTopic(jobDoneTopicName).publishMessage({
                                     data: Buffer.from(JSON.stringify(jobSummary))
                                 }).then((messageId) => {
                                     res.json({jobId, ok: jobSuccessful});
