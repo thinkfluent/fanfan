@@ -220,6 +220,8 @@ The `payload` property may be used in future versions for pipeline or map-reduce
 
 ## Getting Started - Add FanFan to Your Project with Docker Compose
 
+For available docker tags, see the [Dockerhub page](https://hub.docker.com/r/fluentthinking/fanfan/tags).
+
 You will need 3 additional services as follows.
 
 You can use any of the Pub/Sub emulators recommended by Google, here I use an image with some additional tooling that 
