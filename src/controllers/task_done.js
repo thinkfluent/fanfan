@@ -5,6 +5,8 @@ const pubsub = require('../pubsub.js');
 const itemStatus = require("../status.js");
 const cacheKeys = require("../cache_keys.js");
 const validator = require('../validate.js');
+const outcomeBuilder = require('../job_outcome.js');
+const timeouts = require('../timeouts.js');
 
 module.exports = (req, res) => {
     const [attribs, taskOutcome] = pubsub.extractPubSub(req.body.message);
@@ -39,39 +41,15 @@ module.exports = (req, res) => {
                     // Check for race condition on last Task / Job completion
                     redisClient.setNX(jobDoneKey, jobDoneKey).then((setNXResult) => {
                         if (setNXResult) {
-                            // We have the "lock" for the JobDone check
-                            redisClient.mGet([taskOkCountKey, taskFailCountKey, jobStartKey, jobRequestKey]).then((mGetResult) => {
-                                // Cleanup (delete counts, job meta, task list)
+                            // We have successfully acquired the "lock" for the JobDone check
+                            outcomeBuilder.runForLastTaskDone(jobId).then(() => {
+                                // Cleanup (delete counts, job meta, task list, clear timeout)
+                                timeouts.cancelForJob(jobId);
                                 redisClient.del([taskOkCountKey, taskFailCountKey, jobStartKey, jobTasksKey, jobRequestKey, jobDoneKey]);
-                                // Prep stats payload
-                                const [taskOkCount, taskFailCount, jobStartTime, jobRequestJson] = mGetResult;
-                                const jobSuccessful = (!thisTaskFailed && !taskFailCount);
-                                const jobRequest = JSON.parse(jobRequestJson);
-                                const jobSummary = {
-                                    'jobId': jobId,
-                                    'request': jobRequest,
-                                    'status': jobSuccessful ? itemStatus.job.SUCCEEDED : itemStatus.job.FAILED,
-                                    'taskCounts': {
-                                        [itemStatus.task.SUCCEEDED]: parseInt(taskOkCount || 0),
-                                        [itemStatus.task.FAILED]: parseInt(taskFailCount || 0),
-                                    },
-                                    'startedTsp': Math.ceil(jobStartTime / 1000),
-                                    'tookMs': Date.now() - jobStartTime
-                                };
-                                logger.info(jobSummary, 'Job (all tasks) complete');
-
-                                // Publish Job Done
-                                const jobDoneTopicName = jobRequest.doneTopic || appConfig.pubsub_topic_job_done;
-                                pubsub.getTopic(jobDoneTopicName).publishMessage({
-                                    data: Buffer.from(JSON.stringify(jobSummary))
-                                }).then((messageId) => {
-                                    res.json({jobId, ok: jobSuccessful});
-                                }).catch((error) => {
-                                    logger.error({}, 'Failed to publish fan-in message');
-                                    // @todo handle error publishing final FAN-IN action (e.g. retry)
-                                    // @todo store in Redis for re-publish?
-                                    // @todo consider setTimeout() with republish?
-                                });
+                                logger.info({}, `Job [${jobId}] complete. All tasks complete`);
+                                res.json({jobId});
+                            }).catch((error) => {
+                                logger.error({}, 'Error when producing/publishing JobOutcome');
                             });
                         } else {
                             logger.debug(`JobDone race condition avoided. setNX result for done was ${setNXResult}`);
@@ -85,12 +63,12 @@ module.exports = (req, res) => {
                     res.json({jobId});
                 }
             }).catch((error) => {
-                logger.warn(error, 'Failed to sCard');
+                logger.warn(error, 'Failed to sCard (count remaining tasks)');
             });
         }).catch((error) => {
-            logger.warn(error, 'Failed to sRem');
+            logger.warn(error, 'Failed to sRem (clear completed task)');
         });
     }).catch((error) => {
-        logger.warn(error, 'Failed to incr')
+        logger.warn(error, 'Failed to incr (task success or fail counter)')
     });
 }

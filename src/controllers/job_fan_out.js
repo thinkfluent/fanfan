@@ -6,6 +6,7 @@ const taskBuilders = require('../task_builders.js');
 const {v4: uuidv4} = require("uuid");
 const cacheKeys = require("../cache_keys.js");
 const validator = require('../validate.js');
+const timeouts = require('../timeouts.js');
 
 module.exports = (req, res) => {
     const startTime = Date.now();
@@ -78,6 +79,8 @@ module.exports = (req, res) => {
 
         // Once all messages are published
         Promise.all(publishPromises).then((messageIds) => {
+            // @todo record Job timeout
+            timeouts.newJobRequest(jobId, jobRequest.timeout || appConfig.job_timeout);
             logger.info({
                 jobId,
                 tasks: tasks.size,

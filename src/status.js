@@ -2,6 +2,7 @@ module.exports.task = {
     PENDING: 'PENDING',
     RUNNING: 'RUNNING',
     SUCCEEDED: 'SUCCEEDED',
+    TIMEOUT: 'TIMEOUT',
     FAILED: 'FAILED'
 }
 
