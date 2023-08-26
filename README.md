@@ -92,7 +92,8 @@ Tooling/scripts are provided to set these up for local development and in your G
     
 More advanced setup for topics & subscriptions is possible depending on your use case. Options include, but are not limited to:
 
-- Custom topics (per Job, for all Tasks in that Job)
+- Custom Pub/Sub topic (per Job, for all `Task`s in that Job)
+- Custom Pub/Sub topic (per Job, for the final `JobOutcome` message)
 - Pub/Sub attributes (for routing)
 - Pull subscriptions
 - [Google Cloud Tasks as buffer/rate-limiter](https://cloud.google.com/blog/products/serverless/buffer-http-requests-with-cloud-tasks)
