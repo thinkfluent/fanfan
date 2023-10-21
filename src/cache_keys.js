@@ -13,3 +13,7 @@ module.exports.coreKeys = (jobId) => {
         `fanfan-${jobId}-done`,
     ];
 }
+
+module.exports.timeoutKey = (jobId) => {
+    return `fanfan-${jobId}-timeout`;
+}

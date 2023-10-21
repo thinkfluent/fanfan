@@ -11,7 +11,7 @@ const timeouts = require('../timeouts.js');
 module.exports = (req, res) => {
     const startTime = Date.now();
     const [attribs, jobRequest] = pubsub.extractPubSub(req.body.message);
-    logger.debug({jobRequest}, 'PS:jobRequest');
+    logger.debug({jobRequest}, 'jobRequest, as received from Pub/Sub');
 
     const logSendStatus = (error, message, status) => {
         logger.error(error);
@@ -79,8 +79,7 @@ module.exports = (req, res) => {
 
         // Once all messages are published
         Promise.all(publishPromises).then((messageIds) => {
-            // @todo record Job timeout
-            timeouts.newJobRequest(jobId, jobRequest.timeout || appConfig.job_timeout);
+            timeouts.newJobRequest(jobId, jobRequest.timeout || appConfig.default_job_timeout);
             logger.info({
                 jobId,
                 tasks: tasks.size,

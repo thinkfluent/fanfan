@@ -11,5 +11,6 @@ module.exports.job = {
     SCHEDULED: 'SCHEDULED',
     RUNNING: 'RUNNING',
     SUCCEEDED: 'SUCCEEDED',
-    FAILED: 'FAILED' // @todo Do we want "partial"?
+    TIMEOUT: 'TIMEOUT',
+    FAILED: 'FAILED'
 }

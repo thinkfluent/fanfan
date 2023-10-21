@@ -8,5 +8,6 @@ module.exports = require('rc')('fanfan', {
     gcp_project: process.env.GCP_PROJECT || 'get-fanfan',
     log_level: process.env.LOG_LEVEL || 'warn',
     log_http: process.env.LOG_HTTP || false,
-    job_timeout: process.env.JOB_TIMEOUT || 600,
+    default_job_timeout: process.env.DEFAULT_JOB_TIMEOUT || 30,
+    timeout_sync_interval: process.env.TIMEOUT_SYNC_INTERVAL || 30,
 });

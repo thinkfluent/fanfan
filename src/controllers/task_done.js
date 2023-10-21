@@ -49,7 +49,7 @@ module.exports = (req, res) => {
                                 logger.info({}, `Job [${jobId}] complete. All tasks complete`);
                                 res.json({jobId});
                             }).catch((error) => {
-                                logger.error({}, 'Error when producing/publishing JobOutcome');
+                                logger.error(error, 'Error when producing/publishing JobOutcome');
                             });
                         } else {
                             logger.debug(`JobDone race condition avoided. setNX result for done was ${setNXResult}`);

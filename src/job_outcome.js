@@ -1,8 +1,9 @@
-const appConfig = require('../config.js');
-const logger = require('../logger.js');
-const redisClient = require('../redis.js');
-const itemStatus = require("./status");
-const cacheKeys = require("../cache_keys.js");
+const appConfig = require('./config.js');
+const logger = require('./logger.js');
+const redisClient = require('./redis.js');
+const pubsub = require('./pubsub.js');
+const itemStatus = require("./status.js");
+const cacheKeys = require("./cache_keys.js");
 
 const publish = (jobSummary) => {
     return new Promise((resolve, reject) => {
@@ -12,7 +13,7 @@ const publish = (jobSummary) => {
         }).then((messageId) => {
             resolve();
         }).catch((error) => {
-            logger.error({}, 'Failed to publish fan-in / JobOutcome message');
+            logger.error(error, `Failed to publish fan-in / JobOutcome message. Topic [${jobDoneTopicName}]`);
             // @todo handle error publishing final FAN-IN action (e.g. retry)
             // @todo store in Redis for re-publish?
             // @todo consider setTimeout() with republish?
@@ -61,14 +62,20 @@ module.exports.runForTimeout = (jobId) => {
         redisClient.sCard(jobTasksKey).then((sCardResult) => {
             // Tasks remaining: sCardResult
             buildOutcome(jobId).then(jobOutcome => {
-                // Augment the summary with timeout count
-                jobOutcome.taskCounts[itemStatus.task.TIMEOUT] = parseInt(sCardResult || 0);
-                // @todo set status to TIMEOUT if not set to FAILED?
+                // Augment the summary with timeout count & status
+                const timedOutTaskCount = parseInt(sCardResult || 0);
+                jobOutcome.taskCounts[itemStatus.task.TIMEOUT] = timedOutTaskCount;
+                if (timedOutTaskCount > 0) {
+                    jobOutcome.status = itemStatus.job.TIMEOUT;
+                }
                 publish(jobOutcome).then(() => {
                     resolve();
                 }).catch((error) => {
                     reject(error);
                 });
+            }).catch((error) => {
+                logger.error(error, `Failed to build Outcome for jobId [${jobId}]`);
+                reject(error);
             });
         });
     });
