@@ -40,7 +40,7 @@ RUN mkdir -p /app
 COPY . /app
 COPY --from=builder /app/node_modules /app/node_modules
 
-ENV APP_MODE production
+ENV APP_MODE=production
 
 WORKDIR /app
 CMD ["/run.sh"]
