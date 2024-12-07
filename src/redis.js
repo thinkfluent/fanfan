@@ -8,7 +8,7 @@ const { createClient } = require('@redis/client');
 const redisClient = createClient({
     url: `redis://${appConfig.redis_host}:${appConfig.redis_port}`
 });
-redisClient.on('error', err => logger.error('Redis Client Error', err));
+redisClient.on('error', err => logger.error(err, 'Redis Client Error'));
 redisClient.connect().then(() => {
     logger.info('Redis connected OK');
     shutdownHandler.register(() => redisClient.disconnect() );
