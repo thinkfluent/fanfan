@@ -11,7 +11,10 @@ const app = express();
 
 // Cloud Run / HTTP load balancers take care of the access logging. But, in case needed.
 if (appConfig.log_http) app.use(require('pino-http')({logger: logger}));
-app.use(express.json({strict: true})); // JSON in & out
+app.use(express.json({
+    strict: true,  // JSON in & out
+    limit: '10mb', // Pub/Sub max message size
+}));
 app.use(shutdownHandler.middleware()); // Delayed, graceful? async shutdown
 
 // Routes -> actions
