@@ -113,7 +113,7 @@ JSON payload examples are below, but these structured are abstracted away in the
 
 * **Foreach** - generates one task for each value in the set, which is passed as a named payload parameter
   * Pseudocode example: `foreach ['cat', 'dog', 'mouse'] as 'pet'`
-* **Range** - allows for stepped ranges, where each task
+* **Range** - allows for stepped ranges
   * Pseudocode example: `for range(1900, 2000) as 'year'`
 * **Fixed** - the simplest type, creating _n_ identical tasks
 
