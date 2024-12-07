@@ -3,7 +3,7 @@ ARG YARN_PROD=true
 ###############################################################################
 # Build some tooling we want later
 
-FROM golang:latest as prebuilder
+FROM golang:latest AS prebuilder
 
 RUN apt update \
     && apt install curl git -y \
@@ -17,7 +17,7 @@ RUN go install github.com/tomwalder/pubsubc@aded9416d1f3804a48a1371cb1d25aeab807
 # We use the "vanilla" node image to do the install (it comes with git etc)
 
 
-FROM node:20 as builder
+FROM node:22 AS builder
 ARG YARN_PROD
 RUN mkdir -p /app
 COPY ./package.json /app/
@@ -27,7 +27,7 @@ RUN yarn install --production=${YARN_PROD}
 ###############################################################################
 # We use the "slim" image for runtime, pulling in the node_modules from above
 
-FROM node:20-slim
+FROM node:22-slim
 
 # Runtime environment
 COPY ./run.sh /run.sh
