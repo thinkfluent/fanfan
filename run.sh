@@ -17,11 +17,11 @@ echo "Starting FanFan"
 if [[ "${APP_MODE}" = "development"  ]]; then
   if [[ -v NODE_INSPECT ]]; then
     echo "  with inspect"
-    exec /usr/local/bin/node --inspect=0.0.0.0 /app/fanfan.js
+    exec /usr/local/bin/node --disable-warning=DEP0040 --inspect=0.0.0.0 /app/fanfan.js
   else
-    echo "  via nodemon"
-    exec /usr/local/bin/node /app/node_modules/nodemon/bin/nodemon.js /app/fanfan.js
+    echo "  via node watch"
+    exec /usr/local/bin/node --disable-warning=DEP0040 --watch-path=/app/ /app/fanfan.js
   fi
 else
-  exec /usr/local/bin/node /app/fanfan.js
+  exec /usr/local/bin/node --disable-warning=DEP0040 /app/fanfan.js
 fi
