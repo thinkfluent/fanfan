@@ -45,7 +45,7 @@ const rangeBuilder = (jobId, data) => {
     const tasks = new Map();
     for (
         let index = data.fanout.range.start;
-        index < data.fanout.range.stop;
+        index <= data.fanout.range.stop;
         index = index + data.fanout.range.step
     ) {
         const taskId = uuidv4();
