@@ -8,4 +8,5 @@ module.exports = require('rc')('fanfan', {
     gcp_project: process.env.GCP_PROJECT || 'get-fanfan',
     log_level: process.env.LOG_LEVEL || 'warn',
     log_http: process.env.LOG_HTTP || false,
+    nx_done_ttl: parseInt(process.env.NX_DONE_KEY_TTL || 120),
 });
