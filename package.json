@@ -1,6 +1,6 @@
 {
   "name": "fanfan",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "FanFan - a Serverless Fan-out, Fan-in Framework for Google Cloud Pub/Sub",
   "keywords": [
     "google",
