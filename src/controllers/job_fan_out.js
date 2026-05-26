@@ -46,7 +46,7 @@ module.exports = (req, res) => {
     // Default payload & payload builder
     const defaultPayload = jobRequest.payload || {};
     const perTaskPayloadField = jobRequest.fanout.foreach?.as || jobRequest.fanout.range?.as;
-    let buildTaskPayload = (perTaskData) => ({...defaultPayload});
+    let buildTaskPayload = () => defaultPayload;
     if (perTaskPayloadField) {
         buildTaskPayload = (perTaskData) => {
             return {
