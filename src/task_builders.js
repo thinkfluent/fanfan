@@ -1,22 +1,13 @@
 const { v4: uuidv4 } = require('uuid');
 
-module.exports.hasPerTaskPayloadField = false;
-
-module.exports.perTaskPayloadField = '';
-
 module.exports.factory = (data) => {
     if (data?.fanout?.tasks) {
-        this.hasPerTaskPayloadField = false;
         return simpleTasksBuilder;
     }
     if (data?.fanout?.foreach?.as) {
-        this.hasPerTaskPayloadField = true;
-        this.perTaskPayloadField = data.fanout.foreach.as;
         return forEachBuilder;
     }
     if (data?.fanout?.range?.as) {
-        this.hasPerTaskPayloadField = true;
-        this.perTaskPayloadField = data.fanout.range.as;
         return rangeBuilder;
     }
     throw new Error('Could not resolve Task builder');
