@@ -13,6 +13,9 @@ module.exports.validateJobRequest = (data) => {
         ) {
             throw new Error('Invalid fanout/foreach spec provided');
         }
+        if (data.fanout.foreach.items.length < 1) {
+            throw new Error('Invalid fanout/foreach item list. At least one item is required.');
+        }
     } else if ('object' === typeof data.fanout.range) {
         if ('string' !== typeof data.fanout.range.as ||
             'number' !== typeof data.fanout.range.start ||

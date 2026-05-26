@@ -45,11 +45,14 @@ module.exports = (req, res) => {
 
     // Default payload & payload builder
     const defaultPayload = jobRequest.payload || {};
-    let buildTaskPayload = (perTaskData) => defaultPayload;
-    if (taskBuilders.hasPerTaskPayloadField) {
+    const perTaskPayloadField = jobRequest.fanout.foreach?.as || jobRequest.fanout.range?.as;
+    let buildTaskPayload = () => defaultPayload;
+    if (perTaskPayloadField) {
         buildTaskPayload = (perTaskData) => {
-            defaultPayload[taskBuilders.perTaskPayloadField] = perTaskData;
-            return defaultPayload;
+            return {
+                ...defaultPayload,
+                [perTaskPayloadField]: perTaskData
+            };
         }
     }
 
@@ -83,7 +86,7 @@ module.exports = (req, res) => {
                 tasks: tasks.size,
                 tookMs: Date.now() - startTime
             }, 'Fan-out complete');
-            res.json({jobId: jobId, tasks: tasks.length, messages: messageIds.length});
+            res.json({jobId: jobId, tasks: tasks.size, messages: messageIds.length});
         }).catch((error) => {
             // Should not retry, send 200
             logSendStatus(error, 'partialPublish', 200);
@@ -93,4 +96,3 @@ module.exports = (req, res) => {
         logSendStatus(error, 'didNotPublish', 500);
     });
 }
-
